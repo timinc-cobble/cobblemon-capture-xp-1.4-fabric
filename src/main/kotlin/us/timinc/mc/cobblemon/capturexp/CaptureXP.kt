@@ -4,8 +4,6 @@ import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.events.CobblemonEvents
 import com.cobblemon.mod.common.api.pokemon.experience.SidemodExperienceSource
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon
-import me.shedaniel.autoconfig.AutoConfig
-import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer
 import net.fabricmc.api.ModInitializer
 import us.timinc.mc.cobblemon.capturexp.config.CaptureXPConfig
 
@@ -14,12 +12,7 @@ object CaptureXP : ModInitializer {
     private lateinit var captureXPConfig: CaptureXPConfig
 
     override fun onInitialize() {
-        AutoConfig.register(
-            CaptureXPConfig::class.java,
-            ::JanksonConfigSerializer
-        )
-        captureXPConfig = AutoConfig.getConfigHolder(CaptureXPConfig::class.java)
-            .config
+        captureXPConfig = CaptureXPConfig.Builder.load()
 
         CobblemonEvents.POKEMON_CAPTURED.subscribe { event ->
             val playerParty = Cobblemon.storage.getParty(event.player)

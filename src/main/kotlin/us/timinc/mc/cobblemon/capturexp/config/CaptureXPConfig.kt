@@ -1,12 +1,42 @@
 package us.timinc.mc.cobblemon.capturexp.config
 
-import me.shedaniel.autoconfig.ConfigData
-import me.shedaniel.autoconfig.annotation.Config
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment
+import com.google.gson.GsonBuilder
 import us.timinc.mc.cobblemon.capturexp.CaptureXP
+import java.io.File
+import java.io.FileReader
+import java.io.PrintWriter
 
-@Config(name = CaptureXP.MOD_ID)
-class CaptureXPConfig : ConfigData {
-    @Comment("The multiplier for the bonus experience")
+class CaptureXPConfig {
     val multiplier = 1.0
+
+    class Builder {
+        companion object {
+            fun load() : CaptureXPConfig {
+                val gson = GsonBuilder()
+                    .disableHtmlEscaping()
+                    .setPrettyPrinting()
+                    .create()
+
+                var config = CaptureXPConfig()
+                val configFile = File("config/${CaptureXP.MOD_ID}.json")
+                configFile.parentFile.mkdirs()
+
+                if (configFile.exists()) {
+                    try {
+                        val fileReader = FileReader(configFile)
+                        config = gson.fromJson(fileReader, CaptureXPConfig::class.java)
+                        fileReader.close()
+                    } catch (e: Exception) {
+                        println("Error reading config file")
+                    }
+                }
+
+                val pw = PrintWriter(configFile)
+                gson.toJson(config, pw)
+                pw.close()
+
+                return config
+            }
+        }
+    }
 }
